@@ -80,7 +80,7 @@ Bring-your-own agent frameworks: [`docs/frameworks/`](docs/frameworks/) (LangGra
 |---|---|
 | npm | `@markusvankempen/slack-wxo-mcp-gateway` |
 | MCP name | `io.github.markusvankempen/slack-wxo-mcp-gateway` |
-| Topics | `mcp` · `mcp-server` · `slack` · `watsonx-orchestrate` · `wxo` · `byo-slack` · `multi-channel` · `code-engine` · `streamable-http` · `cursor` · `agentic-ai` |
+| Topics | `mcp` · `mcp-server` · `slack` · `watsonx` · `watsonx-orchestrate` · `ibm` · `wxo` · `byo-slack` · `multi-channel` · `code-engine` · `streamable-http` · `cursor` · `agentic-ai` |
 
 Full keyword list lives in [`package.json`](package.json) for npm discoverability.
 
