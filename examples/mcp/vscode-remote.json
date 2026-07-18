@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "slack-wxo-gateway": {
+      "type": "http",
+      "url": "https://YOUR_HOST/mcp"
+    }
+  }
+}

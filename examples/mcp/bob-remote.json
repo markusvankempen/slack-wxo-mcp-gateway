@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "slack-wxo-gateway": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://YOUR_HOST/mcp"]
+    }
+  }
+}

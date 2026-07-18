@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "slack-wxo-gateway": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@markusvankempen/slack-wxo-mcp-gateway", "--stdio"],
+      "env": {
+        "GATEWAY_TRANSPORT": "stdio",
+        "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
+        "WXO_INSTANCE_URL": "https://your-wxo-instance",
+        "WXO_API_KEY": "your-api-key",
+        "WXO_AGENT_ID": "your-agent-id"
+      }
+    }
+  }
+}

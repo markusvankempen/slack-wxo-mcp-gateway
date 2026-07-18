@@ -14,6 +14,8 @@ Choose **one** deployment path. Each has its own directory so steps, URLs, and p
 Shared (both paths):
 
 - [SETUP.md](../SETUP.md) — Slack scopes, WxO agents, env overview  
+- [IDE setup](ide/) — Cursor, VS Code, IBM Bob, Antigravity, Claude Desktop  
+- [examples/mcp/](../examples/mcp/) — copy-paste `mcp.json` templates  
 - [USE_CASES.md](../USE_CASES.md) — real-world scenarios  
 - [config.example.yaml](../config.example.yaml) · [.env.example](../.env.example)  
 - Example agents: [`agent.yaml`](../agent.yaml), [`agents/`](../agents/)

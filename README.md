@@ -39,6 +39,15 @@ Documentation is split so each path stays clear:
 
 Index: [`docs/README.md`](docs/README.md) · Shared Slack/WxO setup: [`SETUP.md`](SETUP.md)
 
+## IDE clients (Cursor · VS Code · Bob · Antigravity · Claude)
+
+| Mode | How |
+|------|-----|
+| **Remote** | Point at `https://YOUR_HOST/mcp` — see [`docs/ide/`](docs/ide/) |
+| **Local stdio** | `npx @markusvankempen/slack-wxo-mcp-gateway --stdio` with `GATEWAY_TRANSPORT=stdio` |
+
+Copy-paste JSON: [`examples/mcp/`](examples/mcp/)
+
 ### Via npm / npx (when published)
 
 ```bash
@@ -147,15 +156,16 @@ Bot scopes: `channels:read`, `groups:read`, `reactions:write` (reinstall Slack a
 
 ---
 
-## Cursor / Claude (remote MCP)
+## Cursor / VS Code / Bob / Antigravity / Claude
 
-Point your MCP client at the hosted `/mcp` URL (streamable HTTP), for example:
+See **[`docs/ide/`](docs/ide/)** for each client. Quick remote bridge:
 
 ```json
 {
   "mcpServers": {
     "slack-wxo-gateway": {
-      "url": "https://YOUR-HOST/mcp"
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://YOUR-HOST/mcp"]
     }
   }
 }
