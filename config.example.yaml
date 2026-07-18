@@ -1,3 +1,7 @@
+# Author: Markus van Kempen
+# Email: mvankempen@ca.ibm.com | markus.van.kempen@gmail.com
+# Web: https://markusvankempen.github.io/
+#
 # Slack ↔ WxO MCP Gateway — multi-channel / multi-agent bindings
 # Copy to config.yaml and fill in (or use ${ENV_VAR} expansion).
 #
