@@ -91,6 +91,8 @@ mode_http() {
   need python3
   export GATEWAY_TRANSPORT="${GATEWAY_TRANSPORT:-streamable-http}"
   export GATEWAY_PORT="${GATEWAY_PORT:-$HTTP_PORT}"
+  # Local HTTP mode: do not let a leftover Code Engine PORT=8080 win
+  export PORT="${GATEWAY_PORT}"
   export GATEWAY_HOST="${GATEWAY_HOST:-0.0.0.0}"
   echo "==> [A] Local HTTP gateway on :${GATEWAY_PORT} (UI /, MCP /mcp)"
   echo "    Docs: docs/PUBLISH-MODES.md · docs/local-ngrok/"

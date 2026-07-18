@@ -15,7 +15,8 @@
     "run:http": "bash scripts/run.sh --mode http",
     "run:podman": "bash scripts/run.sh --mode podman",
     "run:ce": "bash scripts/run.sh --mode ce",
-    "run:ide": "bash scripts/run.sh --mode ide"
+    "run:ide": "bash scripts/run.sh --mode ide",
+    "test:modes": "bash scripts/test_publish_modes.sh"
   },
   "files": [
     "bin/",

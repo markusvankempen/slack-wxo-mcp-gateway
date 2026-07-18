@@ -188,3 +188,15 @@ podman build -t ghcr.io/markusvankempen/slack-wxo-mcp-gateway:1.0.0 .
 ```
 
 Do **not** publish separate npm names per mode.
+
+---
+
+## Smoke-test all modes
+
+From the package directory (private tree):
+
+```bash
+./scripts/test_publish_modes.sh              # A, B, C, D (ngrok skipped)
+./scripts/test_publish_modes.sh --with-ngrok # also hint ngrok e2e
+./scripts/test_publish_modes.sh --skip-podman --skip-ce
+```
