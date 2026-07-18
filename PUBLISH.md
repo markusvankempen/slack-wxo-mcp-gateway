@@ -1,4 +1,4 @@
-# Publish — npm + MCP Registry + GitHub docs
+# Publish — npm + MCP Registry + GitHub
 
 **Author:** Markus van Kempen  
 **Email:** [mvankempen@ca.ibm.com](mailto:mvankempen@ca.ibm.com) · [markus.van.kempen@gmail.com](mailto:markus.van.kempen@gmail.com)  
@@ -8,31 +8,23 @@
 |---------|-----|
 | npm | [`@markusvankempen/slack-wxo-mcp-gateway`](https://www.npmjs.com/package/@markusvankempen/slack-wxo-mcp-gateway) |
 | MCP Registry | `io.github.markusvankempen/slack-wxo-mcp-gateway` |
-| GitHub docs (public) | [slack-wxo-mcp-gateway](https://github.com/markusvankempen/slack-wxo-mcp-gateway) |
-| GitHub code+docs (private) | [slack-wxo-mcp-gateway-dev](https://github.com/markusvankempen/slack-wxo-mcp-gateway-dev) |
+| GitHub (public package) | [slack-wxo-mcp-gateway](https://github.com/markusvankempen/slack-wxo-mcp-gateway) |
+| GitHub (private mirror) | [slack-wxo-mcp-gateway-dev](https://github.com/markusvankempen/slack-wxo-mcp-gateway-dev) |
+| Site | [https://markusvankempen.github.io/](https://markusvankempen.github.io/) |
 
-**Run modes A–D** (one package, switches — not four MCP servers):  
+**Run modes A–D** (one package, switches):  
 [`docs/PUBLISH-MODES.md`](docs/PUBLISH-MODES.md) · `./scripts/run.sh --mode http|podman|ce|ide`
-
-| Mode | Command |
-|------|---------|
-| A Local HTTP | `./scripts/run.sh --mode http` |
-| B Podman/Docker | `./scripts/run.sh --mode podman` |
-| C Code Engine | `./scripts/run.sh --mode ce` |
-| D Cursor/VS Code IDE | `./scripts/run.sh --mode ide` |
 
 ---
 
-## 1. Sync to GitHub
+## 1. Sync package to GitHub
+
+Public repo = **full npm package** (Python source, `bin/`, docs, `server.json`).
 
 ```bash
 gh auth switch --user markusvankempen
-
-# Public docs-only
-./scripts/sync-public-repo.sh
-
-# Private full source + docs
-./scripts/sync-private-repo.sh
+./scripts/sync-public-repo.sh    # public package
+./scripts/sync-private-repo.sh   # private mirror (optional)
 ```
 
 Never push `.env`, `config.yaml`, `.run/`, `.mcpregistry*`, or other secrets.
@@ -41,39 +33,31 @@ Never push `.env`, `config.yaml`, `.run/`, `.mcpregistry*`, or other secrets.
 
 ## 2. Publish to npm + MCP Registry
 
-Order matters: **npm first** (package must exist), then **mcp-publisher**.
+Order: **npm first**, then **mcp-publisher**.
 
 ```bash
-npm login                                    # as markusvankempen
-npm publish --access public --otp=XXXXXX     # 2FA required
-mcp-publisher login github                   # or: -token "$(gh auth token)"
-mcp-publisher publish                        # reads server.json
-```
+cd /path/to/slack_mcp_gateway   # or clone the public repo
 
-One-shot helper (after `npm login` / OTP):
-
-```bash
-./scripts/publish-npm-and-mcp.sh
-# or with OTP:
-npm publish --access public --otp=XXXXXX && mcp-publisher publish
+npm login
+npm publish --access public --otp=XXXXXX
+mcp-publisher login github       # or: -token "$(gh auth token)"
+mcp-publisher publish            # reads server.json
 ```
 
 | Field | Value |
 |-------|--------|
 | `name` | `@markusvankempen/slack-wxo-mcp-gateway` |
 | `mcpName` | `io.github.markusvankempen/slack-wxo-mcp-gateway` |
-| `server.json` | Registry manifest (`runtimeHint: npx`, `--stdio`) |
+| `bin` | `slack-wxo-mcp-gateway` → `bin/slack-wxo-mcp-gateway.js` |
 | `homepage` / `websiteUrl` | `https://markusvankempen.github.io/` |
-| `repository.url` | `https://github.com/markusvankempen/slack-wxo-mcp-gateway.git` |
+| `repository` | `https://github.com/markusvankempen/slack-wxo-mcp-gateway.git` |
 
 ---
 
-## 3. Consumers (hosted MCP)
+## 3. Consumers
 
 | Client | How |
 |--------|-----|
 | watsonx Orchestrate | `orchestrate toolkits add -k mcp … --url https://YOUR_HOST/mcp --transport streamable_http` |
-| Cursor / Claude | Remote MCP URL `https://YOUR_HOST/mcp` (streamable HTTP) |
-| Local (later) | `npx @markusvankempen/slack-wxo-mcp-gateway` after npm publish |
-
-Keep README + USE_CASES in sync before each docs push.
+| Cursor / Claude (remote) | `https://YOUR_HOST/mcp` or `npx -y mcp-remote https://YOUR_HOST/mcp` |
+| Local / IDE stdio | `npx -y @markusvankempen/slack-wxo-mcp-gateway --stdio` |

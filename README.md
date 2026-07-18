@@ -4,7 +4,7 @@
 **Email:** [mvankempen@ca.ibm.com](mailto:mvankempen@ca.ibm.com) · [markus.van.kempen@gmail.com](mailto:markus.van.kempen@gmail.com)  
 **Web:** [https://markusvankempen.github.io/](https://markusvankempen.github.io/) · [GitHub](https://github.com/markusvankempen)
 
-> This repository publishes **documentation only**. Application source is not included here (yet).
+**npm:** [`@markusvankempen/slack-wxo-mcp-gateway`](https://www.npmjs.com/package/@markusvankempen/slack-wxo-mcp-gateway) · **MCP:** `io.github.markusvankempen/slack-wxo-mcp-gateway`
 
 **Pitch:** MCP gateway that **lifts watsonx Orchestrate Slack limitations** — every-message wake-up, multi-channel→multi-agent routing, clean in-thread replies, and a streamable-http toolkit for WxO + Cursor / VS Code / Bob / Antigravity — without replacing your agents.
 
@@ -82,13 +82,17 @@ Connect frameworks **to** this MCP — do not embed them in the gateway.
 | [`docs/frameworks/llamaindex.md`](docs/frameworks/llamaindex.md) | LlamaIndex |
 | [`docs/frameworks/openai-agents.md`](docs/frameworks/openai-agents.md) | OpenAI Agents SDK |
 
-### Via npm / npx (when published)
+### Install (npm / npx)
 
 ```bash
-npx @markusvankempen/slack-wxo-mcp-gateway
+# Hosted HTTP + admin UI (default)
+npx -y @markusvankempen/slack-wxo-mcp-gateway
+
+# IDE / stdio MCP
+npx -y @markusvankempen/slack-wxo-mcp-gateway --stdio
 ```
 
-Requires Node 18+ and Python 3.10+. Then follow the [local-ngrok](docs/local-ngrok/) guide for the tunnel + toolkit steps.
+Requires Node 18+ and Python 3.10+. Copy [`.env.example`](.env.example) → `.env`, then see [local-ngrok](docs/local-ngrok/) or [code-engine](docs/code-engine/).
 
 ---
 
@@ -205,15 +209,15 @@ See **[`docs/ide/`](docs/ide/)** for each client. Quick remote bridge:
 }
 ```
 
-Package identity for registries:
+Package identity:
 
-- npm: `@markusvankempen/slack-wxo-mcp-gateway`
-- MCP name: `io.github.markusvankempen/slack-wxo-mcp-gateway`
-- Homepage: [https://github.com/markusvankempen/slack-wxo-mcp-gateway](https://github.com/markusvankempen/slack-wxo-mcp-gateway)
+- npm: [`@markusvankempen/slack-wxo-mcp-gateway`](https://www.npmjs.com/package/@markusvankempen/slack-wxo-mcp-gateway)
+- MCP: `io.github.markusvankempen/slack-wxo-mcp-gateway`
+- Site: [https://markusvankempen.github.io/](https://markusvankempen.github.io/)
 
 ---
 
 ## License
 
 [Apache-2.0](LICENSE) — © Markus van Kempen  
-[https://github.com/markusvankempen](https://github.com/markusvankempen)
+[https://markusvankempen.github.io/](https://markusvankempen.github.io/) · [https://github.com/markusvankempen](https://github.com/markusvankempen)
