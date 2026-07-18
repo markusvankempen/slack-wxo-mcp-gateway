@@ -4,10 +4,11 @@
 # Email: mvankempen@ca.ibm.com | markus.van.kempen@gmail.com
 # Web: https://markusvankempen.github.io/
 # ---
-# Sync full npm package (source + docs) to public GitHub:
+# Sync documentation + package metadata only (NO application source) to:
 #   github.com/markusvankempen/slack-wxo-mcp-gateway
 #
-# Never pushes secrets (.env, config.yaml, .run/, tokens).
+# Full source lives in the private repo (slack-wxo-mcp-gateway-dev).
+# Never pushes .env, config.yaml, .run/, or Python/JS application source.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -16,7 +17,28 @@ STAGING="${DEST}.staging"
 REPO="markusvankempen/slack-wxo-mcp-gateway"
 BRANCH="${PUBLISH_BRANCH:-main}"
 
-echo "==> Source: $ROOT (npm package: code + docs)"
+DOC_FILES=(
+  README.md
+  USE_CASES.md
+  SETUP.md
+  PUBLISH.md
+  LICENSE
+  config.example.yaml
+  .env.example
+  agent.yaml
+  package.json
+  server.json
+)
+
+# Example agent YAMLs + path-specific docs (not the Python gateway)
+DOC_DIRS=(
+  agents
+  docs
+  examples
+  .github
+)
+
+echo "==> Source: $ROOT (docs + metadata only — no app source)"
 echo "==> Dest:   $DEST"
 echo "==> Repo:   $REPO (public)"
 
@@ -26,29 +48,29 @@ fi
 
 rm -rf "$STAGING"
 mkdir -p "$STAGING"
+for f in "${DOC_FILES[@]}"; do
+  if [[ ! -f "$ROOT/$f" ]]; then
+    echo "Missing required doc file: $f" >&2
+    exit 1
+  fi
+  cp -f "$ROOT/$f" "$STAGING/$f"
+done
 
-# Full package tree minus secrets / junk (include before exclude — first match wins)
-rsync -a \
-  --include '.env.example' \
-  --exclude '.git/' \
-  --exclude '.env' \
-  --exclude '.env.*' \
-  --exclude 'config.yaml' \
-  --exclude '.run/' \
-  --exclude '__pycache__/' \
-  --exclude '*.pyc' \
-  --exclude '.DS_Store' \
-  --exclude '.deps-ok' \
-  --exclude 'node_modules/' \
-  --exclude '*.tgz' \
-  --exclude '*.log' \
-  --exclude '.venv/' \
-  --exclude 'venv/' \
-  --exclude '.pytest_cache/' \
-  --exclude '.mypy_cache/' \
-  --exclude '.mcpregistry*' \
-  --exclude '.npmrc' \
-  "$ROOT/" "$STAGING/"
+for d in "${DOC_DIRS[@]}"; do
+  if [[ -d "$ROOT/$d" ]]; then
+    while IFS= read -r -d '' f; do
+      rel="${f#"$ROOT/"}"
+      mkdir -p "$STAGING/$(dirname "$rel")"
+      cp -f "$f" "$STAGING/$rel"
+    done < <(find "$ROOT/$d" -type f \( -name '*.yaml' -o -name '*.yml' -o -name '*.md' -o -name '*.json' \) -print0 2>/dev/null)
+  fi
+done
+
+# Docs-consumer scripts only (no deploy that embeds app assumptions beyond modes)
+mkdir -p "$STAGING/scripts"
+for s in apply-github-metadata.sh sync-public-repo.sh; do
+  [[ -f "$ROOT/scripts/$s" ]] && cp -f "$ROOT/scripts/$s" "$STAGING/scripts/"
+done
 
 cat > "$STAGING/.gitignore" <<'EOF'
 .env
@@ -59,37 +81,30 @@ config.yaml
 __pycache__/
 *.pyc
 .DS_Store
-.deps-ok
 node_modules/
+*.py
+bin/
 *.tgz
-*.log
-.venv/
-venv/
-.pytest_cache/
-.mypy_cache/
 .mcpregistry*
 .npmrc
 EOF
 
-# Safety: never ship secrets even if they slipped past rsync
-rm -f "$STAGING/.env" "$STAGING/config.yaml"
-rm -f "$STAGING"/.mcpregistry* "$STAGING/.npmrc"
-rm -rf "$STAGING/.run"
+# Hard deny: never stage application source
+rm -rf "$STAGING"/*.py "$STAGING"/bin "$STAGING"/__pycache__ 2>/dev/null || true
+rm -f "$STAGING"/Dockerfile "$STAGING"/requirements.txt \
+  "$STAGING"/deploy_*.sh "$STAGING"/test_*.sh "$STAGING"/stop.sh \
+  "$STAGING"/ui.html 2>/dev/null || true
 
-if [[ -f "$STAGING/.env" ]] || [[ -f "$STAGING/config.yaml" ]] || [[ -d "$STAGING/.run" ]] \
-  || compgen -G "$STAGING/.mcpregistry*" >/dev/null; then
-  echo "ERROR: secrets still present in staging — aborting" >&2
-  ls -la "$STAGING"/.env "$STAGING"/config.yaml "$STAGING"/.mcpregistry* 2>/dev/null || true
+# Fail if any Python source leaked
+if find "$STAGING" -name '*.py' -print -quit | grep -q .; then
+  echo "ERROR: Python source found in public staging — aborting" >&2
+  find "$STAGING" -name '*.py'
   exit 1
 fi
-
-# Required npm / MCP package files
-for f in package.json server.json bin/slack-wxo-mcp-gateway.js README.md LICENSE; do
-  if [[ ! -e "$STAGING/$f" ]]; then
-    echo "ERROR: missing package file in staging: $f" >&2
-    exit 1
-  fi
-done
+if [[ -d "$STAGING/bin" ]]; then
+  echo "ERROR: bin/ must not be in public docs repo" >&2
+  exit 1
+fi
 
 rm -rf "$DEST"
 
@@ -112,7 +127,7 @@ if git diff --cached --quiet; then
   echo "Nothing to commit."
 else
   git commit -m "$(cat <<'EOF'
-Publish npm package source + docs for @markusvankempen/slack-wxo-mcp-gateway.
+Publish documentation and package metadata (application source on request).
 
 EOF
 )"
@@ -121,7 +136,7 @@ fi
 if ! git remote get-url origin >/dev/null 2>&1; then
   gh repo create "$REPO" \
     --public \
-    --description "Slack ↔ WxO MCP gateway — every-message wake-up, multi-channel routing. https://markusvankempen.github.io/" \
+    --description "Docs for Slack↔WxO MCP gateway — source available on request. https://markusvankempen.github.io/" \
     --homepage "https://markusvankempen.github.io/" \
     --source . \
     --remote origin \
@@ -132,14 +147,13 @@ fi
 
 git push -u origin "HEAD:${BRANCH}"
 
-# Apply discoverability metadata when present
 if [[ -x "$ROOT/scripts/apply-github-metadata.sh" ]]; then
   bash "$ROOT/scripts/apply-github-metadata.sh" >/dev/null 2>&1 || true
 else
   gh repo edit "$REPO" \
-    --description "Slack ↔ WxO MCP gateway — every-message wake-up, multi-channel routing. https://markusvankempen.github.io/" \
+    --description "Docs for Slack↔WxO MCP gateway — source available on request. https://markusvankempen.github.io/" \
     --homepage "https://markusvankempen.github.io/" \
     >/dev/null || true
 fi
 
-echo "==> Pushed npm package https://github.com/${REPO}"
+echo "==> Pushed docs-only https://github.com/${REPO}"
