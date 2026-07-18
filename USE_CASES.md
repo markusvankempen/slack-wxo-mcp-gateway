@@ -7,6 +7,9 @@
 These are the scenarios this gateway is meant for — beyond “hello / 2+2”.
 Each case maps to concrete tools, a test path, and pass criteria.
 
+**Why MCP (not only a private poller)?** See [docs/WHY-THIS-MCP.md](docs/WHY-THIS-MCP.md) — tags: `every-message` · `multi-channel` · `thread-followups` · `gateway-thread` · `mcp-toolkit`.  
+**Other agent runtimes:** [docs/frameworks/](docs/frameworks/).
+
 ---
 
 ## Agents (defaults)

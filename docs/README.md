@@ -13,8 +13,10 @@ Choose **one** deployment path. Each has its own directory so steps, URLs, and p
 
 Shared (both paths):
 
+- **[WHY-THIS-MCP.md](WHY-THIS-MCP.md)** — how this gateway lifts WxO Slack limitations (with tags)  
 - [SETUP.md](../SETUP.md) — Slack scopes, WxO agents, env overview  
 - [IDE setup](ide/) — Cursor, VS Code, IBM Bob, Antigravity, Claude Desktop  
+- [Frameworks](frameworks/) — LangGraph, LlamaIndex, OpenAI Agents (connect *to* MCP)  
 - [examples/mcp/](../examples/mcp/) — copy-paste `mcp.json` templates  
 - [USE_CASES.md](../USE_CASES.md) — real-world scenarios  
 - [config.example.yaml](../config.example.yaml) · [.env.example](../.env.example)  

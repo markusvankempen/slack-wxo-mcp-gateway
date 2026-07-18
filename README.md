@@ -6,13 +6,32 @@
 
 > This repository publishes **documentation only**. Application source is not included here (yet).
 
-Hosted gateway that makes the “every Slack message → watsonx Orchestrate agent” story easy to reuse:
+**Pitch:** MCP gateway that **lifts watsonx Orchestrate Slack limitations** — every-message wake-up, multi-channel→multi-agent routing, clean in-thread replies, and a streamable-http toolkit for WxO + Cursor / VS Code / Bob / Antigravity — without replacing your agents.
+
+`tags:` `wxo-limitations` · `byo-slack` · `every-message` · `multi-channel` · `multi-agent` · `thread-followups` · `gateway-thread` · `no-done-noise` · `mcp-toolkit` · `streamable-http` · `poller` · `code-engine` · `ngrok` · `agentic-ai`
 
 > **One config site:** map many Slack channels → many WxO agents.  
 > Poller (and optional Slack Events) wake agents.  
 > Same host exposes an **MCP toolkit** (`/mcp`) for WxO / Cursor / other clients.
 
-WxO `byo_slack` still only does @mention/DM. This gateway is the custom integration layer.
+Deep dive: **[Why this MCP — lifting WxO limits](docs/WHY-THIS-MCP.md)**
+
+---
+
+## Why this approach (WxO limits → lift)
+
+| WxO / Slack limit | Tag | Gateway lift |
+|-------------------|-----|----------------|
+| `byo_slack` ≈ @mention / DM only | `every-message` | Poller / Events wake agents on **every** human message |
+| Hard to run many channels → many agents | `multi-channel` `multi-agent` | One bindings table + admin UI |
+| Thread follow-ups easy to drop | `thread-followups` | Reads thread replies + context |
+| Noisy finals (`done`, etc.) in Slack | `gateway-thread` `no-done-noise` | Gateway posts answers; filters noise |
+| Agents need remote tools with real DNS | `mcp-toolkit` `streamable-http` | Hosted `/mcp` for Orchestrate toolkits |
+| Ops stuck cloning pollers | `ops-self-serve` | MCP tools + diagnostics + logs |
+| Slack ops only inside Slack/WxO UI | `ide-parity` | Same tools in Cursor, VS Code, Bob, Antigravity, Claude |
+
+WxO stays the **brain** (LLMs, skills, flows). This gateway is the **Slack + routing + MCP edge**.  
+Bring-your-own agent frameworks: [`docs/frameworks/`](docs/frameworks/) (LangGraph, LlamaIndex, OpenAI Agents).
 
 ---
 
@@ -22,7 +41,7 @@ WxO `byo_slack` still only does @mention/DM. This gateway is the custom integrat
 |---|---|
 | npm | `@markusvankempen/slack-wxo-mcp-gateway` |
 | MCP name | `io.github.markusvankempen/slack-wxo-mcp-gateway` |
-| Topics | `mcp` · `mcp-server` · `slack` · `watsonx-orchestrate` · `wxo` · `code-engine` · `ngrok` · `streamable-http` · `cursor` · `claude` · `agentic-ai` |
+| Topics | `mcp` · `mcp-server` · `slack` · `watsonx-orchestrate` · `wxo` · `byo-slack` · `multi-channel` · `code-engine` · `streamable-http` · `cursor` · `agentic-ai` |
 
 Full keyword list lives in [`package.json`](package.json) for npm discoverability.
 
@@ -47,6 +66,17 @@ Index: [`docs/README.md`](docs/README.md) · Shared Slack/WxO setup: [`SETUP.md`
 | **Local stdio** | `npx @markusvankempen/slack-wxo-mcp-gateway --stdio` with `GATEWAY_TRANSPORT=stdio` |
 
 Copy-paste JSON: [`examples/mcp/`](examples/mcp/)
+
+## Agent frameworks (LangGraph · LlamaIndex · OpenAI Agents)
+
+Connect frameworks **to** this MCP — do not embed them in the gateway.
+
+| Guide | Focus |
+|-------|--------|
+| [`docs/frameworks/`](docs/frameworks/) | Index + checklist |
+| [`docs/frameworks/langgraph.md`](docs/frameworks/langgraph.md) | LangGraph / LangChain |
+| [`docs/frameworks/llamaindex.md`](docs/frameworks/llamaindex.md) | LlamaIndex |
+| [`docs/frameworks/openai-agents.md`](docs/frameworks/openai-agents.md) | OpenAI Agents SDK |
 
 ### Via npm / npx (when published)
 
