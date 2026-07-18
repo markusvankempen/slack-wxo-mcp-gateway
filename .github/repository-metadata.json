@@ -6,7 +6,10 @@
     "topics": [
       "mcp",
       "mcp-server",
+      "watsonx",
       "watsonx-orchestrate",
+      "ibm",
+      "ibm-cloud",
       "wxo",
       "slack",
       "byo-slack",
@@ -19,10 +22,7 @@
       "ngrok",
       "cursor",
       "vscode",
-      "langgraph",
       "agentic-ai",
-      "tool-calling",
-      "ibm-cloud",
       "model-context-protocol"
     ]
   }
