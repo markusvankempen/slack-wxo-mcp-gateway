@@ -19,14 +19,16 @@ Optional demo tunnel: `--mode ngrok` (local HTTP + ngrok + WxO toolkit register)
 
 Wrapper: [`scripts/run.sh`](../scripts/run.sh)
 
-```text
-  @markusvankempen/slack-wxo-mcp-gateway   (npm)
-  + Dockerfile                             (one image)
-           │
-           ├─ A http / ngrok
-           ├─ B podman|docker
-           ├─ C code-engine
-           └─ D ide (stdio) ──► Cursor / VS Code / Bob / …
+```mermaid
+flowchart TB
+  PKG["@markusvankempen/slack-wxo-mcp-gateway<br/>npm + optional Dockerfile"]
+  PKG --> A["A — http / ngrok"]
+  PKG --> B["B — podman / docker"]
+  PKG --> C["C — Code Engine"]
+  PKG --> D["D — ide stdio"]
+  D --> IDE["Cursor · VS Code · Bob · Antigravity · Claude"]
+  A & B & C --> HTTP["streamable-http /mcp"]
+  HTTP --> WXO["WxO toolkits + remote IDEs"]
 ```
 
 ---

@@ -6,6 +6,15 @@
 
 **One MCP — four ship modes** (switches, not separate packages):
 
+```mermaid
+flowchart LR
+  A["A Local"] --> MCP["Same MCP server"]
+  B["B Container"] --> MCP
+  C["C Code Engine"] --> MCP
+  D["D IDE stdio"] --> MCP
+  MCP --> Docs["Guides below"]
+```
+
 | Mode | Guide | Wrapper |
 |------|--------|---------|
 | **A** Local host | [`local-ngrok/`](local-ngrok/) | `./scripts/run.sh --mode http` |

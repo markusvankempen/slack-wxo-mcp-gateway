@@ -8,6 +8,24 @@
 
 watsonx Orchestrate is excellent at **agents + tools**. Out of the box Slack (`byo_slack`) is intentionally narrow. This gateway is the **custom integration layer** that keeps WxO as the brain while removing several Slack / routing / tooling ceilings.
 
+```mermaid
+flowchart TB
+  subgraph Before["Without gateway"]
+    B1["byo_slack ≈ @mention / DM only"]
+    B2["Hard multi-channel → multi-agent"]
+    B3["Toolkit needs stable public /mcp"]
+  end
+
+  subgraph After["With Slack ↔ WxO MCP Gateway"]
+    A1["every-message wake-up via poller / Events"]
+    A2["bindings: channel → agent"]
+    A3["hosted streamable-http /mcp + admin UI"]
+  end
+
+  Before -->|lift| After
+  After --> Brain["WxO remains the brain<br/>LLMs · skills · flows"]
+```
+
 ---
 
 ## The limitation → lift map
@@ -33,6 +51,19 @@ watsonx Orchestrate is excellent at **agents + tools**. Out of the box Slack (`b
 2. **IDEs share the toolkit** — ops agents and developers use one contract.  
 3. **Remote toolkit registration** is the WxO-native way to extend agents without baking Slack SDKs into every skill.  
 4. **Streamable HTTP** matches how Orchestrate imports remote MCP toolkits today.
+
+```mermaid
+flowchart LR
+  subgraph Edge["Gateway"]
+    Poll["Poller wakes agents"]
+    Tools["MCP tools<br/>bindings · Slack · WxO · ops"]
+  end
+
+  Poll --> WxO["WxO agents"]
+  Tools --> WxO
+  Tools --> IDE["Cursor / VS Code / Bob / Claude"]
+  Tools --> UI["Admin UI"]
+```
 
 A bare channel poller can wake agents; an **MCP gateway** also makes Slack + routing **tools** for agents and IDEs.
 

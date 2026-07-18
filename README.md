@@ -19,6 +19,42 @@
 
 Deep dive: **[Why this MCP — lifting WxO limits](docs/WHY-THIS-MCP.md)**
 
+### Architecture at a glance
+
+```mermaid
+flowchart LR
+  subgraph Slack
+    C1["#support"]
+    C2["#orders"]
+    C3["#ops"]
+  end
+
+  subgraph Gateway["Slack ↔ WxO MCP Gateway"]
+    Bind["config.yaml bindings"]
+    Poll["Poller / Events"]
+    MCP["/mcp streamable-http"]
+    UI["Admin UI /"]
+  end
+
+  subgraph WxO["watsonx Orchestrate"]
+    A1["Agent A"]
+    A2["Agent B"]
+    A3["Agent C"]
+  end
+
+  subgraph Clients["MCP clients"]
+    IDE["Cursor / VS Code / Bob / …"]
+    TK["WxO toolkits"]
+  end
+
+  C1 & C2 & C3 --> Poll
+  Poll --> Bind
+  Bind --> A1 & A2 & A3
+  A1 & A2 & A3 -.->|gateway_thread reply| Poll
+  IDE & TK --> MCP
+  UI --> Bind
+```
+
 ---
 
 ## Why this approach (WxO limits → lift)
@@ -53,6 +89,18 @@ Full keyword list lives in [`package.json`](package.json) for npm discoverabilit
 ## Publish & run modes (A–D)
 
 **One package / one image** — pick a mode (see [`docs/PUBLISH-MODES.md`](docs/PUBLISH-MODES.md)):
+
+```mermaid
+flowchart TB
+  PKG["npm @markusvankempen/slack-wxo-mcp-gateway<br/>+ optional container image"]
+  PKG --> A["A Local HTTP<br/>:3100 UI + /mcp + poller"]
+  PKG --> B["B Podman / Docker<br/>:8080"]
+  PKG --> C["C Code Engine<br/>HTTPS always-on"]
+  PKG --> D["D IDE stdio<br/>Cursor / VS Code / Bob"]
+  A --> N["ngrok demo tunnel"]
+  A & B & C --> R["Remote /mcp clients"]
+  D --> L["Local MCP session"]
+```
 
 | Mode | Command | Use |
 |------|---------|-----|
@@ -101,15 +149,37 @@ Requires Node 18+ and Python 3.10+. Env template: [`.env.example`](.env.example)
 
 ## Mental model
 
-```text
-Slack channels          Gateway (this host)           WxO
-─────────────────       ─────────────────────         ────────────────
-#support   ──────┐
-#orders    ──────┼──►  config.yaml bindings  ──►  agent A / B / C
-#ops       ──────┘      poller + /slack/events      Runs API
-                        MCP tools @ /mcp
-                        Config UI @ /
+Multi-channel routing:
+
+```mermaid
+flowchart LR
+  S1["#support"] --> G["Gateway bindings"]
+  S2["#orders"] --> G
+  S3["#ops"] --> G
+  G --> WA["WxO agent A"]
+  G --> WB["WxO agent B"]
+  G --> WC["WxO agent C"]
 ```
+
+Message path (`reply_mode: gateway_thread`):
+
+```mermaid
+sequenceDiagram
+  participant U as Slack user
+  participant Ch as Channel / thread
+  participant GW as Gateway poller
+  participant Wx as WxO Runs API
+  participant Bot as Slack bot reply
+
+  U->>Ch: Human message
+  GW->>Ch: Read new messages / replies
+  GW->>Wx: Start bound agent run
+  Wx-->>GW: Agent answer text
+  GW->>Bot: chat.postMessage in thread
+  Bot-->>Ch: Clean reply (no done noise)
+```
+
+Same host also serves **MCP** at `/mcp` and the **admin UI** at `/`.
 
 ---
 
